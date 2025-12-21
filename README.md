@@ -1,179 +1,92 @@
-# Personal RAG Assistant
+# Personal RAG Assistant 🤖📚
 
-A comprehensive Retrieval-Augmented Generation (RAG) system built with Streamlit that allows you to upload documents and ask questions about them. The system also includes web search and calculator capabilities.
+A powerful, agentic Retrieval-Augmented Generation (RAG) system built with **Streamlit**, **LangChain**, and **LangGraph**. It combines the speed of **Groq** with the robustness of **GitHub Models (Azure AI)** to provide accurate answers from your documents and the web.
 
-## Features
+## 🚀 Key Features
 
-- 📚 **Document Upload**: Support for PDF, TXT, and DOCX files
-- 🤖 **Gemma 1.5 Flash Model**: Powered by Google's latest language model
-- 🔍 **RAG System**: Retrieve relevant information from uploaded documents
-- 🌐 **Web Search**: Search the web for additional information when needed
-- 🧮 **Calculator**: Perform mathematical calculations
-- 🧠 **Memory**: Remember the last 10 conversations
-- 💬 **Chat Interface**: Modern chat-based UI with Streamlit
-- 📱 **Responsive Design**: Works on desktop and mobile devices
+- **⚡ Blazing Fast AI**: Uses **Groq** (Llama 3.1 8B) as the primary engine for near-instant responses.
+- **🛡️ Robust Fallback**: Automatically switches to **GitHub Models** (Llama 3.1 405B) if Groq is unavailable.
+- **🧠 Hybrid Search**: Combines **FAISS** (Semantic Vector Search) and **BM25** (Keyword Search) using an `EnsembleRetriever` for superior retrieval accuracy.
+- **🛠️ Agentic Capabilities**:
+  - **Document Search**: Intelligently queries uploaded files.
+  - **Web Search**: Uses DuckDuckGo to find real-time information.
+  - **Calculator**: Handles mathematical queries precisely.
+- **📄 Multi-Format Support**: Upload PDF, TXT, and DOCX files.
+- **🔗 Source Citations**: Displays exact source chunks used to answer questions completely with a "Sources" expander.
 
-## Setup Instructions
+## 🛠️ Tech Stack
+
+- **Frontend**: Streamlit
+- **Orchestration**: LangChain & LangGraph
+- **LLMs**: Groq (`llama-3.1-8b-instant`), GitHub Models (`meta-llama-3.1-405b-instruct`)
+- **Embeddings**: `sentence-transformers/all-MiniLM-L6-v2` (Running specifically on CPU for compatibility)
+- **Vector Store**: FAISS
+- **Keyword Search**: rank_bm25
+
+## 📋 Setup Instructions
 
 ### 1. Clone the Repository
 ```bash
 git clone <your-repo-url>
-cd Mini_RAG
+cd Personal-RAG-Assistant
 ```
 
 ### 2. Create Virtual Environment
 ```bash
 python -m venv venv
-```
-
-### 3. Activate Virtual Environment
-**Windows:**
-```bash
+# Activate:
+# Windows:
 venv\Scripts\activate
-```
-
-**macOS/Linux:**
-```bash
+# Mac/Linux:
 source venv/bin/activate
 ```
 
-### 4. Install Dependencies
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 5. Set Up Environment Variables
-Create a `.env` file in the project root:
+### 4. Configure Environment Variables
+Create a `.env` file in the root directory:
 ```env
-GOOGLE_API_KEY=your_google_api_key_here
+# Primary LLM (Groq)
+GROQ_API_KEY=gsk_...
+
+# Secondary/Fallback LLM (GitHub Models / Azure AI)
+GITHUB_TOKEN=github_pat_...
+GITHUB_MODEL=meta-llama-3.1-405b-instruct
+GITHUB_BASE_URL=https://models.inference.ai.azure.com
 ```
 
-**Important Security Note:** 
-- Never commit your `.env` file to version control
-- The `.env` file is already added to `.gitignore` for security
-- Replace `your_google_api_key_here` with your actual Google API key
-
-### 6. Run the Application
+### 5. Run the Application
 ```bash
-streamlit run Rag_Personal_Project.py
+streamlit run app.py
 ```
+The app will open at `http://localhost:8501`.
 
-The application will open in your browser at `http://localhost:8501`
+## 💡 Usage Guide
 
-## Usage Guide
+1.  **Upload Docs**: Use the sidebar to upload your PDF/TXT/DOCX files.
+2.  **Process**: Click "Process Documents". The system will indexing them using Hybrid Search (Vectors + Keywords).
+3.  **Chat**: Ask questions like:
+    - *"Summarize the uploaded marketing plan"* (Uses Document Search)
+    - *"What is the stock price of Apple today?"* (Uses Web Search)
+    - *"Calculate 15% of 8500"* (Uses Calculator)
+4.  **View Sources**: Expand the "📚 Sources" section below the answer to see exactly where the information came from.
 
-### 1. Upload Documents
-- Use the sidebar to upload PDF, TXT, or DOCX files
-- Click "Process Documents" to create the vector store
-- Wait for the processing to complete
-
-### 2. Ask Questions
-- Type your questions in the chat interface
-- The system will:
-  - First search uploaded documents for relevant information
-  - If information is found, provide detailed answers
-  - If not found, use web search for additional information
-  - Use calculator for mathematical queries
-
-### 3. Example Questions
-For novels:
-- "What is the moral of the story?"
-- "Who is the main character?"
-- "Who is the villain and why?"
-- "What are the key themes?"
-
-For legal documents:
-- "What are the main legal implications?"
-- "What are the key terms and conditions?"
-- "What are the penalties mentioned?"
-
-### 4. Memory Management
-- The system remembers the last 10 conversations
-- Use "Clear Memory" button to reset conversation history
-
-## Project Structure
+## 📂 Project Structure
 
 ```
-Mini_RAG/
-├── Rag_Personal_Project.py    # Main application file
-├── requirements.txt           # Python dependencies
-├── README.md                 # This file
-├── .env                      # Environment variables (create this)
-└── venv/                     # Virtual environment
+Personal-RAG-Assistant/
+├── app.py              # Main Streamlit application
+├── graph_agent.py      # Core RAG logic, Tool definitions, and LangGraph setup
+├── prompt.py           # System prompts
+├── requirements.txt    # Project dependencies
+├── .env                # API keys (not committed)
+└── README.md           # Documentation
 ```
 
-## Technical Details
+## ⚠️ Troubleshooting
 
-### Models Used
-- **LLM**: Gemma 3 27B (Google)
-- **Embeddings**: sentence-transformers/all-MiniLM-L6-v2
-- **Vector Store**: FAISS
-
-### Tools Available
-1. **Document Search**: Searches uploaded documents
-2. **Web Search**: DuckDuckGo search for current information
-3. **Calculator**: Mathematical calculations
-
-### Memory System
-- Uses ConversationBufferWindowMemory
-- Keeps last 10 conversations
-- Persists during session
-
-## Deployment
-
-### Streamlit Cloud
-1. Push your code to GitHub
-2. Connect your repository to Streamlit Cloud
-3. Set environment variables in Streamlit Cloud dashboard
-4. Deploy
-
-### Local Deployment
-```bash
-streamlit run Rag_Personal_Project.py --server.port 8501 --server.address 0.0.0.0
-```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Import Errors**: Make sure all dependencies are installed
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **API Key Issues**: Verify your Google API key is correct and has proper permissions
-
-3. **Memory Issues**: For large documents, consider reducing chunk size in the code
-
-4. **Performance**: The system works best with documents under 100MB
-
-### Performance Tips
-- Use smaller chunk sizes for better retrieval
-- Limit document size for faster processing
-- Clear memory periodically for better performance
-
-## Contributing
-
-Feel free to submit issues and enhancement requests!
-
-## License
-
-This project is for personal use. Please respect the terms of service for all APIs used.
-
-## Security
-
-### API Key Management
-- API keys are stored in `.env` file (not in code)
-- `.env` file is excluded from version control via `.gitignore`
-- Never share your API keys publicly
-- For deployment, set environment variables in your hosting platform
-
-### Best Practices
-- Use environment variables for all sensitive data
-- Regularly rotate your API keys
-- Monitor API usage to prevent unexpected charges
-- Keep your dependencies updated
-
-## Support
-
-For issues and questions, please check the troubleshooting section or create an issue in the repository.
+-   **Import Errors**: If you see `ModuleNotFoundError: No module named 'langchain.retrievers'`, run `pip install -r requirements.txt` to ensure `rank_bm25` and strict LangChain versions are installed.
+-   **Embedding Crash**: If the app crashes on start with `MetaTensor` errors, ensure you are running the latest version of `graph_agent.py` which enforces CPU execution for embeddings.
